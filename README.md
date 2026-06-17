@@ -1,13 +1,16 @@
-# Deep Agent IT Incident Response
+# 🤖 Deep Agent IT Incident Response
 
-An autonomous IT incident response system built with **LangChain Deep Agents** and **FastAPI**. The system receives alerts via webhook, analyzes them using a multi-subagent pipeline, and returns actionable remediation steps — all without human intervention.
+An autonomous IT incident response system built with **LangChain Deep Agents** and **FastAPI**. The system monitors real system resources, sends alerts via webhook, analyzes them using a multi-subagent pipeline, and returns actionable remediation steps — all without human intervention.
+
+Inspired by [this Medium article](https://medium.com/) on Deep Agents for IT operations.
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
-Monitoring Tool (Datadog, Zabbix, etc.)
+monitor.py (psutil)
+  reads real system metrics
         ↓
 POST /alert  (FastAPI Webhook)
         ↓
@@ -20,7 +23,7 @@ POST /alert  (FastAPI Webhook)
 │  fixer      → remediation   │
 └─────────────────────────────┘
         ↓
-JSON Response
+JSON Response + Console Output
 ```
 
 ### Subagents
@@ -34,7 +37,7 @@ JSON Response
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 deep-agent-it-incident-response/
@@ -45,18 +48,19 @@ deep-agent-it-incident-response/
 ├── tools.py          # LangChain tools
 ├── subagents.py      # Subagent definitions
 ├── main.py           # Deep agent orchestrator
-└── webhook.py        # FastAPI webhook server
+├── webhook.py        # FastAPI webhook server
+└── monitor.py        # Real-time system monitor (psutil)
 ```
 
 ---
 
-## Setup
+## ⚙️ Setup
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/MohammadHeydari/Deep-Agent-IT-Incident-Response
-cd Deep-Agent-IT-Incident-Response
+git clone https://github.com/your-username/deep-agent-it-incident-response.git
+cd deep-agent-it-incident-response
 ```
 
 ### 2. Create a virtual environment
@@ -91,15 +95,52 @@ AVVALAI_MODEL=gpt-4o-mini
 
 ---
 
-## Usage
+## 🚀 Usage
 
-### Run the webhook server
+### Step 1 — Start the webhook server
 
 ```bash
 uvicorn webhook:server --reload --port 8000
 ```
 
-### Send a test alert
+### Step 2 — Start the system monitor
+
+Open a second terminal and run:
+
+```bash
+python monitor.py
+```
+
+The monitor will read real metrics from your machine every 10 seconds and automatically send alerts to the webhook when thresholds are exceeded.
+
+### Default thresholds
+
+```python
+THRESHOLDS = {
+    "cpu":  90,   # CPU usage %
+    "ram":  85,   # RAM usage %
+    "disk": 95,   # Disk usage %
+    "gpu":  90,   # GPU usage %
+}
+```
+
+### Example output
+
+```
+Monitoring started. Checking every 10s...
+Thresholds: CPU>90% | RAM>85% | Disk>95%
+
+[ALERT] Disk usage at 96.5% on MyPC at 07:48 UTC. Free: 11.5GB of 328.3GB.
+[AGENT] To address the high disk usage on C:\, follow these remediation steps:
+1. Run Disk Cleanup...
+2. Identify large files...
+```
+
+---
+
+## Manual Testing
+
+Send a test alert without the monitor:
 
 **PowerShell:**
 ```powershell
@@ -113,16 +154,7 @@ Invoke-RestMethod -Uri "http://localhost:8000/alert" `
 ```bash
 curl -X POST http://localhost:8000/alert \
   -H "Content-Type: application/json" \
-  -d '{"alert": "CPU spike to 100% on prod-db-01 at 14:32 UTC. 500 errors on API gateway."}'
-```
-
-### Example response
-
-```json
-{
-  "status": "processed",
-  "conclusion": "1. Monitor CPU usage with your observability tool..."
-}
+  -d '{"alert": "CPU spike to 100% on prod-db-01 at 14:32 UTC."}'
 ```
 
 ### Health check
@@ -133,14 +165,13 @@ curl http://localhost:8000/health
 
 ---
 
-## Connecting a Real Monitoring Tool
+## Connecting an External Monitoring Tool
 
-Configure your monitoring tool to send a POST request to `/alert` when an incident is detected.
+You can also connect external tools like Datadog or Zabbix by pointing their webhook to `/alert`:
 
-**Datadog Webhook example:**
 ```
-URL: http://your-server:8000/alert
-Method: POST
+URL:     http://your-server:8000/alert
+Method:  POST
 Payload: {"alert": "$EVENT_TITLE - $EVENT_MSG"}
 ```
 
@@ -156,6 +187,9 @@ langchain-openai
 fastapi
 uvicorn
 python-dotenv
+psutil
+requests
+gputil
 ```
 
 ---
@@ -168,5 +202,4 @@ This project implements the **Deep Agent** pattern from LangChain:
 - Each **subagent** runs in its own isolated, short-lived loop
 - The **harness** automatically manages context window limits
 - The agent decides the workflow at runtime based on alert severity
-
----
+- `monitor.py` reads **real system metrics** using `psutil` — no external monitoring tool needed
