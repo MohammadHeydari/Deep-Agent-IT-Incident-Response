@@ -2,8 +2,6 @@
 
 An autonomous IT incident response system built with **LangChain Deep Agents** and **FastAPI**. The system monitors real system resources, sends alerts via webhook, analyzes them using a multi-subagent pipeline, and returns actionable remediation steps — all without human intervention.
 
-Inspired by [this Medium article](https://medium.com/) on Deep Agents for IT operations.
-
 ---
 
 ## Architecture
