@@ -56,7 +56,7 @@ deep-agent-it-incident-response/
 
 ```bash
 git clone https://github.com/MohammadHeydari/Deep-Agent-IT-Incident-Response
-cd deep-agent-it-incident-response
+cd Deep-Agent-IT-Incident-Response
 ```
 
 ### 2. Create a virtual environment
