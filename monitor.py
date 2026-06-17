@@ -1,17 +1,17 @@
 import psutil
+import GPUtil
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 
 WEBHOOK_URL = "http://localhost:8000/alert"
 
 THRESHOLDS = {
-
     # in %
-
-    "cpu": 90,      
-    "ram": 85,      
-    "disk": 95,     
+    "cpu": 90,
+    "ram": 85,
+    "disk": 95,
+    "gpu": 90,
 }
 
 INTERVAL = 10  # check each 10 seconds
@@ -44,6 +44,19 @@ def check_and_alert():
             f"Free: {gb(disk.free)}GB of {gb(disk.total)}GB."
         )
 
+    # GPU
+    try:
+        gpus = GPUtil.getGPUs()
+        for gpu in gpus:
+            if gpu.load * 100 > THRESHOLDS["gpu"]:
+                alerts.append(
+                    f"GPU usage at {round(gpu.load * 100)}% on {get_hostname()} at {now()}. "
+                    f"GPU: {gpu.name}. Temp: {gpu.temperature}C. "
+                    f"Memory: {round(gpu.memoryUsed)}MB of {round(gpu.memoryTotal)}MB."
+                )
+    except Exception:
+        pass  # no GPU or driver not available
+
     for alert in alerts:
         send_alert(alert)
 
@@ -63,7 +76,7 @@ def get_hostname():
     return socket.gethostname()
 
 def now():
-    return datetime.utcnow().strftime("%H:%M UTC")
+    return datetime.now(timezone.utc).strftime("%H:%M UTC")
 
 def mb(bytes): return round(bytes / 1024 / 1024)
 def gb(bytes): return round(bytes / 1024 / 1024 / 1024, 1)
@@ -71,7 +84,7 @@ def gb(bytes): return round(bytes / 1024 / 1024 / 1024, 1)
 
 if __name__ == "__main__":
     print(f"Monitoring started. Checking every {INTERVAL}s...")
-    print(f"Thresholds: CPU>{THRESHOLDS['cpu']}% | RAM>{THRESHOLDS['ram']}% | Disk>{THRESHOLDS['disk']}%\n")
+    print(f"Thresholds: CPU>{THRESHOLDS['cpu']}% | RAM>{THRESHOLDS['ram']}% | Disk>{THRESHOLDS['disk']}% | GPU>{THRESHOLDS['gpu']}%\n")
 
     while True:
         check_and_alert()
