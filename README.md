@@ -1,4 +1,4 @@
-# 🤖 Deep Agent IT Incident Response
+# Deep Agent IT Incident Response
 
 An autonomous IT incident response system built with **LangChain Deep Agents** and **FastAPI**. The system monitors real system resources, sends alerts via webhook, analyzes them using a multi-subagent pipeline, and returns actionable remediation steps — all without human intervention.
 
@@ -6,7 +6,7 @@ Inspired by [this Medium article](https://medium.com/) on Deep Agents for IT ope
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 monitor.py (psutil)
@@ -37,7 +37,7 @@ JSON Response + Console Output
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 deep-agent-it-incident-response/
@@ -54,12 +54,12 @@ deep-agent-it-incident-response/
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/deep-agent-it-incident-response.git
+git clone https://github.com/mohammadheydari/deep-agent-it-incident-response.git
 cd deep-agent-it-incident-response
 ```
 
@@ -95,7 +95,7 @@ AVVALAI_MODEL=gpt-4o-mini
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### Step 1 — Start the webhook server
 
