@@ -55,7 +55,7 @@ deep-agent-it-incident-response/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/deep-agent-it-incident-response.git
+git clone https://github.com/MohammadHeydari/Deep-Agent-IT-Incident-Response
 cd deep-agent-it-incident-response
 ```
 
